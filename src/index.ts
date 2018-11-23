@@ -28,8 +28,8 @@ export class WatchableStore<T> {
   public watch(cb: (data: T) => any): number {
     const id = this._nextHandlerId;
     this._watchers.push({
-        id,
-        trigger: cb,
+      id,
+      trigger: cb,
     });
     this._nextHandlerId++;
     return id;
