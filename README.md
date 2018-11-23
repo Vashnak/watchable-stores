@@ -15,6 +15,7 @@ WatchableStore provides us 2 methods :
  - unwatch(id: number): void;
 
 Here are how we can use it.
+
 ![dashboard view](https://github.com/Vashnak/watchable-stores/blob/master/screenshots/Screenshot_UserCreationForm.png)
 ![dashboard view](https://github.com/Vashnak/watchable-stores/blob/master/screenshots/Screenshot_UserList.png)
 
