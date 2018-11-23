@@ -1,7 +1,7 @@
 function deepFreeze(o: any): any {
   Object.freeze(o);
 
-  Object.getOwnPropertyNames(o).forEach(function(prop) {
+  Object.getOwnPropertyNames(o).forEach(prop => {
     if (
       o.hasOwnProperty(prop) &&
       o[prop] !== null &&
@@ -23,8 +23,6 @@ export interface IHandler {
 export interface IOptions {
   disableDeepFreeze: boolean;
 }
-
-export interface IWatchableStore {}
 
 /**
  *
@@ -53,10 +51,10 @@ export const WatchableStore = <T>(initialData: T, options: IOptions = { disableD
       });
     },
     watch(cb: (data: T) => any): number {
-      let ID = nextHandlerId++;
+      const ID = nextHandlerId++;
       handlers.push({
-        id: ID,
         handler: cb,
+        id: ID,
       });
       return ID;
     },
