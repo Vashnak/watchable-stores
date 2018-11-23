@@ -1,70 +1,46 @@
-function deepFreeze(o: any): any {
-  Object.freeze(o);
+export interface IWatcher {
+    trigger: (props?: any) => {},
+    id: number,
+}
 
-  Object.getOwnPropertyNames(o).forEach(prop => {
-    if (
-      o.hasOwnProperty(prop) &&
-      o[prop] !== null &&
-      (typeof o[prop] === 'object' || typeof o[prop] === 'function') &&
-      !Object.isFrozen(o[prop])
-    ) {
-      deepFreeze(o[prop]);
+export class WatchableStore<T> {
+    private _watchers: IWatcher[];
+    private _data: T;
+    private _nextHandlerId: number;
+
+    constructor(initialData: T) {
+        this._data = initialData;
+        this._watchers = [];
+        this._nextHandlerId = 0;
     }
-  });
 
-  return o;
-}
+    get data() {
+        return this._data;
+    }
 
-export interface IHandler {
-  id: number;
-  handler: (data: any) => any;
-}
+    set data(data: T) {
+        this._data = data;
+        this._watchers.forEach(watcher => {
+            watcher.trigger(this._data);
+        })
+    }
 
-export interface IOptions {
-  disableDeepFreeze: boolean;
-}
+    public watch(cb: (data: T) => any): number {
+        const id = this._nextHandlerId;
+        this._watchers.push({
+            trigger: cb,
+            id
+        });
+        this._nextHandlerId++;
+        return id;
+    }
 
-/**
- *
- * Base Store to extend
- *
- * data attribute contains the state of the store
- *
- * You can subscribe to data to be notified when data change
- * Example :
- * let subscription = store.watch(cb)
- * store.unwatch(subscription) // when you're done with it
- *
- */
-export const WatchableStore = <T>(initialData: T, options: IOptions = { disableDeepFreeze: false }) => {
-  const handlers = [] as IHandler[];
-  let nextHandlerId = 0;
-
-  return {
-    get data(): T {
-      return initialData;
-    },
-    set data(t: T) {
-      initialData = options.disableDeepFreeze ? t : deepFreeze(t);
-      handlers.forEach(handler => {
-        handler.handler(initialData);
-      });
-    },
-    watch(cb: (data: T) => any): number {
-      const ID = nextHandlerId++;
-      handlers.push({
-        handler: cb,
-        id: ID,
-      });
-      return ID;
-    },
-    unwatch(id: number) {
-      for (let i = 0; i < handlers.length; i++) {
-        if (handlers[i].id === id) {
-          handlers.splice(i, 1);
-          break;
+    public unwatch(id: number): void {
+        for (let i = 0; i < this._watchers.length; i++) {
+            if (this._watchers[i].id === id) {
+                this._watchers.splice(i, 1);
+                break;
+            }
         }
-      }
-    },
-  };
-};
+    }
+}
