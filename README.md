@@ -1,4 +1,4 @@
-# watchable-store
+# watchable-stores
 
 Data model with observer / observable pattern for front-end purpose.
 
